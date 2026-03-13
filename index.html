@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CourierHTTP</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    <script>
+      document.addEventListener('contextmenu', (e) => e.preventDefault());
+      document.addEventListener('keydown', (e) => {
+        const isDevToolsShortcut =
+          e.key === 'F12' ||
+          (e.metaKey && e.altKey && e.key === 'i') ||
+          (e.metaKey && e.altKey && e.key === 'I');
+        if (isDevToolsShortcut) {
+          e.preventDefault();
+          if (window.__TAURI_INTERNALS__) {
+            window.__TAURI_INTERNALS__.invoke('open_devtools');
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
