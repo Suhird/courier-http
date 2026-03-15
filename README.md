@@ -181,8 +181,6 @@ All data is stored locally on disk. No cloud, no accounts, no telemetry.
 
 Pre-built installers for macOS (Apple Silicon + Intel) and Windows are available on the [GitHub Releases](../../releases) page.
 
-See [Deployment.md](./Deployment.md) for the full release process, code signing setup, and Homebrew tap instructions.
-
 ### macOS — first launch
 
 If the app is not code-signed, macOS Gatekeeper will block it on first open. Run once to clear the quarantine flag:
