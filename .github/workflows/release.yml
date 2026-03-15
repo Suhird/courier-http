@@ -1,0 +1,70 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  publish-tauri:
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # macOS Apple Silicon (M1/M2/M3)
+          - platform: macos-latest
+            args: --target aarch64-apple-darwin
+
+          # macOS Intel
+          - platform: macos-latest
+            args: --target x86_64-apple-darwin
+
+          # Windows (builds both NSIS .exe and MSI .msi)
+          - platform: windows-latest
+            args: ''
+
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin,x86_64-apple-darwin
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Build and publish Tauri app
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # macOS code signing (optional for v0.1.0 — see Section 4)
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        with:
+          tagName: v__VERSION__
+          releaseName: CourierHTTP v__VERSION__
+          releaseBody: |
+            ## What's new
+            See CHANGELOG.md for details.
+
+            ## Downloads
+            | Platform | File |
+            |---|---|
+            | macOS Apple Silicon | `CourierHTTP_*_aarch64.dmg` |
+            | macOS Intel | `CourierHTTP_*_x64.dmg` |
+            | Windows | `CourierHTTP_*_x64-setup.exe` (recommended) or `.msi` |
+          releaseDraft: true
+          prerelease: false
+          args: ${{ matrix.args }}

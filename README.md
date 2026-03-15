@@ -33,6 +33,8 @@ Built with Tauri v2, React 18, TypeScript, and Rust.
 - **Collections** — save and organise requests, drag-and-drop reorder, export to JSON
 - **History** — automatic request history (last 200 entries)
 - **Response viewer** — status, duration, size, syntax-highlighted body (JSON, HTML, XML), headers table
+- **Copy response** — one-click copy button on the response panel
+- **Resizable panels** — drag the divider between request and response panels to resize
 - **Multi-tab** — multiple open requests with independent state
 - **Right-click disabled** — no browser DevTools exposed to end users
 
@@ -115,6 +117,8 @@ npm test
 
 172 tests covering utility functions, Zustand stores, and React components.
 
+> Test files are excluded from the production TypeScript build via `tsconfig.json`. Run tests with `npm test`; they use a separate vitest config.
+
 ### Rust backend (Cargo)
 
 ```bash
@@ -122,7 +126,7 @@ cd src-tauri
 cargo test
 ```
 
-57 tests covering model serialization, storage layer, command logic, and HTTP execution (uses `wiremock` for mock HTTP server tests).
+58 tests covering model serialization, storage layer, command logic, and HTTP execution (uses `wiremock` for mock HTTP server tests — all 5 auth types covered).
 
 ---
 
@@ -156,10 +160,26 @@ courier-http/
 
 ## Data storage
 
-All data is stored locally on disk:
+All data is stored locally on disk. No cloud, no accounts, no telemetry.
 
-| Data | Location (macOS) |
-|---|---|
-| Collections | `~/Library/Application Support/courier-http/collections/` |
-| Environments | `~/Library/Application Support/courier-http/environments/` |
-| History | `~/Library/Application Support/courier-http/history.json` |
+| Data | macOS | Windows |
+|---|---|---|
+| Collections | `~/Library/Application Support/courier-http/collections/` | `%APPDATA%\courier-http\collections\` |
+| Environments | `~/Library/Application Support/courier-http/environments/` | `%APPDATA%\courier-http\environments\` |
+| History | `~/Library/Application Support/courier-http/history.json` | `%APPDATA%\courier-http\history.json` |
+
+---
+
+## Releases
+
+Pre-built installers for macOS (Apple Silicon + Intel) and Windows are available on the [GitHub Releases](../../releases) page.
+
+See [Deployment.md](./Deployment.md) for the full release process, code signing setup, and Homebrew tap instructions.
+
+### macOS — first launch
+
+If the app is not code-signed, macOS Gatekeeper will block it on first open. Run once to clear the quarantine flag:
+
+```bash
+xattr -cr /Applications/CourierHTTP.app
+```
