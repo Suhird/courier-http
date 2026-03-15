@@ -26,6 +26,7 @@ bin/
 *.sw?
 
 # IDE folders
+docs/
 .vscode/
 .idea/
 *.swp

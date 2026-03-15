@@ -10,37 +10,45 @@ import { useHistoryStore } from './store/historyStore';
 import { useRequestStore } from './store/requestStore';
 import { RequestBuilder } from './components/request/RequestBuilder';
 import { ResponseViewer } from './components/response/ResponseViewer';
+import { UrlBar } from './components/request/UrlBar';
+import { useRequestSend } from './hooks/useRequestSend';
+import type { HttpMethod } from './types';
 
 export default function App() {
   const fetchCollections = useCollectionStore((s) => s.fetchCollections);
   const fetchEnvironments = useEnvironmentStore((s) => s.fetchEnvironments);
   const fetchHistory = useHistoryStore((s) => s.fetchHistory);
 
-  const activeTabId = useRequestStore((s) => s.activeTabId);
-  const tabs = useRequestStore((s) => s.tabs);
+  const { tabs, activeTabId, updateTabRequest } = useRequestStore();
   const activeTab = tabs.find((t) => t.id === activeTabId);
 
-  const [saveModalOpen, setSaveModalOpen] = useState(false);
-  const [requestHeight, setRequestHeight] = useState(340);
-  const dragStartY = useRef(0);
-  const dragStartHeight = useRef(0);
+  const { handleSend } = useRequestSend();
 
-  const onPointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+  const [saveModalOpen, setSaveModalOpen] = useState(false);
+  const [leftWidth, setLeftWidth] = useState(480);
+
+  const containerRef = useRef<HTMLDivElement>(null);
+  const dragStartX = useRef(0);
+  const dragStartWidth = useRef(0);
+
+  const onDragStart = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.currentTarget.setPointerCapture(e.pointerId);
-    dragStartY.current = e.clientY;
-    dragStartHeight.current = requestHeight;
-    document.body.style.cursor = 'row-resize';
-  }, [requestHeight]);
+    dragStartX.current = e.clientX;
+    dragStartWidth.current = leftWidth;
+    document.body.style.cursor = 'col-resize';
+  }, [leftWidth]);
 
-  const onPointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+  const onDragMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     if (!e.currentTarget.hasPointerCapture(e.pointerId)) return;
-    const delta = e.clientY - dragStartY.current;
-    const newHeight = Math.min(Math.max(dragStartHeight.current + delta, 150), 600);
-    setRequestHeight(newHeight);
+    const containerWidth = containerRef.current?.offsetWidth ?? 960;
+    const maxWidth = containerWidth * 0.70;
+    const delta = e.clientX - dragStartX.current;
+    const newWidth = Math.min(Math.max(dragStartWidth.current + delta, 300), maxWidth);
+    setLeftWidth(newWidth);
   }, []);
 
-  const onPointerUp = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+  const onDragEnd = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     e.currentTarget.releasePointerCapture(e.pointerId);
     document.body.style.cursor = '';
   }, []);
@@ -63,39 +71,55 @@ export default function App() {
           <Sidebar />
         </div>
 
-        {/* Main content area */}
-        <div className="flex-1 flex overflow-hidden">
-          <div className="flex-1 flex flex-col overflow-hidden">
-            {/* Small toolbar above RequestBuilder */}
-            <div className="flex items-center justify-end px-3 py-1 bg-[#1a1a2e] border-b border-gray-800 flex-shrink-0">
-              <button
-                onClick={() => setSaveModalOpen(true)}
-                className="flex items-center gap-1 px-2 py-1 text-gray-400 hover:text-gray-200 hover:bg-white/5 rounded transition-colors"
-                title="Save current request to a collection"
-              >
-                <Save size={14} />
-                <span className="text-xs ml-0.5">Save</span>
-              </button>
-            </div>
+        {/* Main content area — containerRef excludes sidebar */}
+        <div ref={containerRef} className="flex-1 flex flex-col overflow-hidden">
+          {/* Save toolbar */}
+          <div className="flex items-center justify-end px-3 py-1 bg-[#1a1a2e] border-b border-gray-800 flex-shrink-0">
+            <button
+              onClick={() => setSaveModalOpen(true)}
+              className="flex items-center gap-1 px-2 py-1 text-gray-400 hover:text-gray-200 hover:bg-white/5 rounded transition-colors"
+              title="Save current request to a collection"
+            >
+              <Save size={14} />
+              <span className="text-xs ml-0.5">Save</span>
+            </button>
+          </div>
 
-            <div style={{ height: requestHeight }} className="overflow-hidden flex-shrink-0">
+          {/* URL bar — full width above both panes */}
+          <UrlBar
+            method={activeTab?.request.method ?? 'GET'}
+            url={activeTab?.request.url ?? ''}
+            isLoading={activeTab?.isLoading ?? false}
+            onMethodChange={(method: HttpMethod) =>
+              activeTab && updateTabRequest(activeTab.id, { method })
+            }
+            onUrlChange={(url: string) =>
+              activeTab && updateTabRequest(activeTab.id, { url })
+            }
+            onSend={handleSend}
+          />
+
+          {/* Horizontal split */}
+          <div className="flex flex-1 overflow-hidden">
+            {/* Left pane: request tabs */}
+            <div style={{ width: leftWidth }} className="flex-shrink-0 overflow-hidden">
               <RequestBuilder />
             </div>
 
-            <div className="flex-1 flex flex-col overflow-hidden">
-              {/* Drag handle at top of response panel */}
-              <div
-                onPointerDown={onPointerDown}
-                onPointerMove={onPointerMove}
-                onPointerUp={onPointerUp}
-                className="h-1.5 bg-orange-500/60 hover:bg-orange-500 cursor-row-resize flex-shrink-0 transition-colors flex items-center justify-center group select-none"
-                title="Drag to resize"
-              >
-                <div className="w-8 h-0.5 rounded-full bg-orange-300/60 group-hover:bg-orange-200 transition-colors" />
-              </div>
-              <div className="flex-1 overflow-hidden">
-                <ResponseViewer />
-              </div>
+            {/* Vertical drag handle */}
+            <div
+              onPointerDown={onDragStart}
+              onPointerMove={onDragMove}
+              onPointerUp={onDragEnd}
+              className="w-1.5 bg-gray-800 hover:bg-orange-500/60 cursor-col-resize flex-shrink-0 flex items-center justify-center group select-none transition-colors"
+              title="Drag to resize"
+            >
+              <div className="h-8 w-0.5 rounded-full bg-gray-600 group-hover:bg-orange-400 transition-colors" />
+            </div>
+
+            {/* Right pane: response viewer */}
+            <div className="flex-1 overflow-hidden">
+              <ResponseViewer />
             </div>
           </div>
         </div>

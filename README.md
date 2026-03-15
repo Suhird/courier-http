@@ -18,7 +18,7 @@
 |-----------------|
 |![Response UI](screenshots/screenshot1.png) |
 
-A local, offline-first desktop HTTP client — a Postman alternative that runs entirely on your machine with no accounts, no cloud sync, and no telemetry.
+A free, local, offline-first desktop HTTP client — a Postman alternative that runs entirely on your machine with no accounts, no cloud sync, and no telemetry. **Free forever. No paid tiers, no paywalls, no subscriptions — ever.** Your data never leaves your computer.
 
 Built with Tauri v2, React 18, TypeScript, and Rust.
 
@@ -157,6 +157,12 @@ courier-http/
 ```
 
 ---
+
+## Privacy & Cost
+
+CourierHTTP is **100% free** — no paid plans, no feature gates, no subscriptions, and that will never change.
+
+All data stays on your machine. The app makes no network connections except the HTTP requests you explicitly send. There is no telemetry, no analytics, no crash reporting, no account system, and no cloud sync. Nothing you type, save, or send is ever transmitted anywhere other than the endpoints you choose.
 
 ## Data storage
 
