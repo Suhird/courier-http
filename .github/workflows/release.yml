@@ -45,26 +45,33 @@ jobs:
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # macOS code signing (optional for v0.1.0 — see Section 4)
-          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
-          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
-          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          # To enable macOS code signing, add these six secrets to your repo
+          # (Settings → Secrets → Actions) and uncomment the lines below.
+          # See Deployment.md Section 4 for how to obtain each value.
+          #
+          # APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          # APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          # APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          # APPLE_ID: ${{ secrets.APPLE_ID }}
+          # APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          # APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         with:
           tagName: v__VERSION__
           releaseName: CourierHTTP v__VERSION__
           releaseBody: |
-            ## What's new
-            See CHANGELOG.md for details.
-
             ## Downloads
             | Platform | File |
             |---|---|
             | macOS Apple Silicon | `CourierHTTP_*_aarch64.dmg` |
             | macOS Intel | `CourierHTTP_*_x64.dmg` |
             | Windows | `CourierHTTP_*_x64-setup.exe` (recommended) or `.msi` |
+
+            ### macOS — first launch (unsigned build)
+            If macOS Gatekeeper blocks the app, run once in Terminal:
+            ```
+            xattr -cr /Applications/CourierHTTP.app
+            ```
+          generateReleaseNotes: true
           releaseDraft: true
           prerelease: false
           args: ${{ matrix.args }}
