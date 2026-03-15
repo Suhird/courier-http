@@ -1,14 +1,14 @@
 # CourierHTTP
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Tauri-24C8DB?style=for-the-badge&logo=tauri&logoColor=FFFFFF" alt="Tauri" />
-  <img src="https://img.shields.io/badge/Rust-000000?style=for-the-badge&logo=rust&logoColor=white" alt="Rust" />
-  <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React" />
-  <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
-  <img src="https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite" />
-  <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS" />
-  <img src="https://img.shields.io/badge/Zustand-764ABC?style=for-the-badge&logo=react&logoColor=white" alt="Zustand" />
-  <img src="https://img.shields.io/badge/License-GPLv3-blue.svg?style=for-the-badge" alt="License: GPL v3" />
+  <a href="https://v2.tauri.app"><img src="https://img.shields.io/badge/Tauri-24C8DB?style=for-the-badge&logo=tauri&logoColor=FFFFFF" alt="Tauri" /></a>
+  <a href="https://www.rust-lang.org"><img src="https://img.shields.io/badge/Rust-000000?style=for-the-badge&logo=rust&logoColor=white" alt="Rust" /></a>
+  <a href="https://www.typescriptlang.org"><img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" /></a>
+  <a href="https://tailwindcss.com"><img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS" /></a>
+  <a href="https://zustand.docs.pmnd.rs/learn/getting-started/introduction"><img src="https://img.shields.io/badge/Zustand-764ABC?style=for-the-badge&logo=react&logoColor=white" alt="Zustand" /></a>
+  <a href="https://github.com/Suhird/courier-http/actions/workflows/release.yml"><img src="https://img.shields.io/github/actions/workflow/status/Suhird/courier-http/release.yml?style=for-the-badge&label=build" alt="Build" /></a>
+  <img src="https://img.shields.io/badge/tests-349%20frontend%20%7C%2058%20rust-brightgreen?style=for-the-badge&logo=checkmarx&logoColor=white" alt="Tests: 349 frontend | 58 rust" />
+  <a href="https://github.com/Suhird/courier-http/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-GPLv3-blue.svg?style=for-the-badge" alt="License: GPL v3" /></a>
 </p>
 
 
@@ -78,7 +78,7 @@ sudo apt install libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchel
 
 ```bash
 # Clone the repo
-git clone <repo-url>
+git clone https://github.com/Suhird/courier-http.git
 cd courier-http
 
 # Install frontend dependencies
@@ -115,7 +115,7 @@ Output is in `src-tauri/target/release/bundle/`.
 npm test
 ```
 
-172 tests covering utility functions, Zustand stores, and React components.
+349 tests covering utility functions, Zustand stores, hooks, and React components.
 
 > Test files are excluded from the production TypeScript build via `tsconfig.json`. Run tests with `npm test`; they use a separate vitest config.
 
@@ -138,11 +138,12 @@ courier-http/
 ├── src/
 │   ├── types/index.ts      # shared TypeScript types
 │   ├── lib/                # interpolate, tauri wrappers, utils
+│   ├── hooks/              # useRequestSend
 │   ├── store/              # Zustand stores (requests, collections, environments, history)
 │   ├── components/
 │   │   ├── shared/         # Badge, KeyValueTable, MonacoEditor
 │   │   ├── layout/         # TabBar, StatusBar
-│   │   ├── request/        # RequestBuilder and all request tabs
+│   │   ├── request/        # UrlBar, RequestBuilder and all request tabs
 │   │   ├── response/       # ResponseViewer and sub-components
 │   │   └── sidebar/        # Collections, History, Environments, SaveRequestModal
 │   └── App.tsx
