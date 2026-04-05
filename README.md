@@ -24,6 +24,9 @@ Built with Tauri v2, React 18, TypeScript, and Rust.
 
 ---
 
+**Dowload:** You can download direct installer [here](https://github.com/Suhird/courier-http/releases/tag/v0.2.0).
+---
+
 ## Features
 
 - **Send HTTP requests** — GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS
